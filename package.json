@@ -1,0 +1,31 @@
+{
+  "name": "jquery-calx",
+  "version": "2.2.7",
+  "description": "jQuery plugin for building excel-formula based calculation form",
+  "main": "jquery-calx-2.2.7.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xsanisty/jquery-calx.git"
+  },
+  "keywords": [
+    "excel",
+    "jquery",
+    "formula",
+    "calculator",
+    "calx",
+    "spreadsheet",
+    "form"
+  ],
+  "devDependencies": {
+    "jquery": ">= 1.9.1"
+  },
+  "author": "Xsanisty Developer Team <developers@xsanisty.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xsanisty/jquery-calx/issues"
+  },
+  "homepage": "https://github.com/xsanisty/jquery-calx#readme"
+}
