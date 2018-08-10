@@ -6091,7 +6091,8 @@ logical : {
         if(typeof(numeral) == 'undefined'){
             return '#NAME?';
         }
-        return numeral().unformat(text);
+        // return numeral().unformat(text);
+        return numeral(text)._value ? numeral(text)._value : 0;
     }
 },
     trigonometry:{
@@ -8497,6 +8498,7 @@ cell.fx = cell.prototype;/**
  * @return {void}
  */
 cell.fx.init = function(){
+
     var $address = (this.el) ? this.el.attr('data-cell') : this.address,
         $formula = (this.el) ? this.el.attr('data-formula') : '',
         $format  = (this.el) ? this.el.attr('data-format') : false,
@@ -8544,14 +8546,13 @@ cell.fx.init = function(){
     this.format     = $format;
     this.address    = $address;
 
-
     //console.log('cell[#'+this.sheet.elementId+'!'+$address+'] : Initializing the cell');
     if($format && typeof(numeral) != 'undefined' && $.trim($value) !== ''){
-        var rawValue = numeral().unformat($value);
+        // var rawValue = numeral().unformat($value);
+        var rawValue = numeral($value)._value ? numeral($value)._value : 0;
 
         if($format.indexOf('%') > -1 && ($value).indexOf('%') == -1){
             rawValue = rawValue/100;
-
         }
     }else{
         rawValue = ($.isNumeric($value)) ? parseFloat($value) : $value;
@@ -8559,9 +8560,10 @@ cell.fx.init = function(){
 
     this.setValue(rawValue);
 
-    if($.trim($value) != '' && $.isNumeric($value)){
+    // This was commented out as it causes NaN to appear in field values
+    // if($.trim($value) != '' && $.isNumeric($value)){
         this.renderComputedValue();
-    }
+    // }
     //this.attachEvent();
 };/**
  * calculate cells formula and process dependant
@@ -8894,7 +8896,9 @@ cell.fx.processDependant = function(){
  */
 cell.fx.renderComputedValue = function(){
     //console.log('cell[#'+this.sheet.elementId+'!'+this.address+'] : rendering computed value');
-
+    if(this.el.attr('type') == 'number') {
+        this.el.attr('type','text');
+    }
     if(this.formula && this.formula.substring(0,5).toLowerCase() == 'graph'){
         return this;
     }else if(false !== this.el){
@@ -8912,7 +8916,7 @@ cell.fx.renderComputedValue = function(){
                         )
                         ? numeral(originalVal).format(this.format)
                         : originalVal;
-
+        
         //console.log('render computed value of '+this.address+ ' with formula '+this.formula);
         if(isFormTag){
             if(this.isCheckbox){
@@ -9117,7 +9121,6 @@ cell.fx.getFormattedValue = function(){
 cell.fx.setValue = function(value){
 
     //console.log('cell[#'+this.sheet.elementId+'!'+this.address+'] : setting value to be : '+value);
-
     this.value = value;
 
     if(this.sheet.affectedCell.indexOf(this.address) == -1){
@@ -9764,6 +9767,7 @@ sheet.fx.getActiveCell = function(){
      * get the formatted value of the cell, and display it to the element
      */
     this.el.on('calx.renderComputedValue', 'input[data-cell]', function(){
+
         var cellAddr    = $(this).attr('data-cell'),
             currentCell = currentSheet.cells[cellAddr];
 
@@ -9774,12 +9778,17 @@ sheet.fx.getActiveCell = function(){
      * update value of the current cell internally
      */
     this.el.on('calx.setValue', 'input[data-cell], select[data-cell]', function(){
-        var element     = $(this),
-            cellAddr    = element.attr('data-cell'),
-            currentCell = currentSheet.cells[cellAddr],
-            oldVal      = currentCell.getValue(),
-            newVal      = currentCell.el.val(),
-            cellFormat  = currentCell.getFormat();
+        
+        var element     = $(this);
+        var cellAddr    = element.attr('data-cell');
+        var currentCell = currentSheet.cells[cellAddr];
+        var oldVal      = currentCell.getValue();
+        var newVal      = currentCell.el.val();
+        var cellFormat  = currentCell.getFormat();
+
+        if(currentCell.el.attr('type') == 'number') {
+            currentCell.el.attr('type', 'text');
+        }
 
         if(currentCell.isCheckbox && currentCell.el.attr('type') == 'checkbox'){
             if(currentCell.el.prop('checked')){
@@ -9808,7 +9817,8 @@ sheet.fx.getActiveCell = function(){
                         });
         }else{
             if(cellFormat && typeof(numeral) != 'undefined' && $.trim(newVal) !== ''){
-                rawValue = numeral().unformat(newVal);
+                // rawValue = numeral().unformat(newVal);
+                rawValue = numeral(newVal)._value ? numeral(newVal)._value : 0;
 
                 if(cellFormat.indexOf('%') > -1 && (newVal).indexOf('%') == -1){
                     rawValue = rawValue/100;
@@ -9904,9 +9914,38 @@ sheet.fx.getActiveCell = function(){
 
     /** focus does not depend on configuration, always get the value on focus */
     this.el.on('focus', 'input[data-cell]',function(){
-        //console.log($(this).attr('data-cell')+'focus');
-        $(this).trigger('calx.getValue');
+        if(!PlatformConfig.isAndroid) {
+            //console.log($(this).attr('data-cell')+'focus');
+            if($(this).attr('type') == 'text') {
+                $(this).attr('type', 'number');
+            }
+            $(this).trigger('calx.getValue');    
+        }
     });
+
+    // This works until we are scrolling over
+    this.el.on('touchend', 'input[data-cell]',function(){
+        if(!PlatformConfig.isAndroid) {
+            if($(this).attr('type') == 'text') {
+                $(this).attr('type', 'number');
+            }    
+        }
+    });
+
+    // Try this
+    // this.el.on('touchend', 'input[data-cell]',function(){
+    //     if ($(this).is(":focus")) {
+    //         if($(this).attr('type') == 'text') {
+    //             $(this).attr('type', 'number');
+    //         }
+    //     }
+    // });
+
+    // this.el.on('tap', 'input[data-cell]',function(){
+    //     if($(this).attr('type') == 'text') {
+    //         $(this).attr('type', 'number');
+    //     }
+    // });
 
     /** keyup does not depend on configuration, always set value on keyup */
     this.el.on('keyup', 'input[data-cell]',function(e){
@@ -9957,7 +9996,7 @@ init : function (option) {
         sheetIdentifier = $(this).attr('data-calx-identifier');
 
         if(!sheetIdentifier || typeof(calx.sheetRegistry[sheetIdentifier]) == 'undefined'){
-            sheetIdentifier = 'CALX'+Object.keys(calx.sheetRegistry).length;
+            sheetIdentifier = 'CALX'+(new Date()).valueOf();
 
             calx.sheetRegistry[sheetIdentifier] = new sheet(sheetIdentifier, this, option);
 
