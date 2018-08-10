@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xsanisty/jquery-calx.git"
+    "url": "git+https://github.com/GeorgeD19/jquery-calx.git"
   },
   "keywords": [
     "excel",
@@ -25,7 +25,7 @@
   "author": "Xsanisty Developer Team <developers@xsanisty.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/xsanisty/jquery-calx/issues"
+    "url": "https://github.com/GeorgeD19/jquery-calx/issues"
   },
-  "homepage": "https://github.com/xsanisty/jquery-calx#readme"
+  "homepage": "https://github.com/GeorgeD19/jquery-calx#readme"
 }
