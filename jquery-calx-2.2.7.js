@@ -9913,7 +9913,8 @@ sheet.fx.getActiveCell = function(){
     });
 
     /** focus does not depend on configuration, always get the value on focus */
-    this.el.on('focus', 'input[data-cell]',function(){
+    this.el.on('focus', 'input[data-cell]:not([readonly])',function(){
+        console.log('focus');
         if(!PlatformConfig.isAndroid) {
             //console.log($(this).attr('data-cell')+'focus');
             if($(this).attr('type') == 'text') {
@@ -9924,11 +9925,13 @@ sheet.fx.getActiveCell = function(){
     });
 
     // This works until we are scrolling over
-    this.el.on('touchend', 'input[data-cell]',function(){
+    this.el.on('touchend', 'input[data-cell]:not([readonly])',function(){
+        console.log('touchend');
         if(!PlatformConfig.isAndroid) {
             if($(this).attr('type') == 'text') {
                 $(this).attr('type', 'number');
             }    
+            $(this).trigger('calx.getValue');
         }
     });
 
