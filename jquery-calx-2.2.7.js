@@ -8916,7 +8916,7 @@ cell.fx.renderComputedValue = function(){
                         )
                         ? numeral(originalVal).format(this.format)
                         : originalVal;
-        
+                        
         //console.log('render computed value of '+this.address+ ' with formula '+this.formula);
         if(isFormTag){
             if(this.isCheckbox){
@@ -9754,7 +9754,9 @@ sheet.fx.getActiveCell = function(){
             cellFormat  = currentCell.getFormat();
 
         if(cellFormat && cellFormat.indexOf('%') >= 0){
-            cellValue = cellValue*100+' %';
+            // cellValue = cellValue*100+' %';
+            cellValue = cellValue*100;
+            cellValue = cellValue.toFixed(0);
         }
 
         if(!currentCell.isCheckbox){
@@ -9916,7 +9918,6 @@ sheet.fx.getActiveCell = function(){
     this.el.on('focus', 'input[data-cell]:not([readonly])',function(){
         console.log('focus');
         if(!PlatformConfig.isAndroid) {
-            //console.log($(this).attr('data-cell')+'focus');
             if($(this).attr('type') == 'text') {
                 $(this).attr('type', 'number');
             }
@@ -9952,7 +9953,7 @@ sheet.fx.getActiveCell = function(){
 
     /** keyup does not depend on configuration, always set value on keyup */
     this.el.on('keyup', 'input[data-cell]',function(e){
-        //console.log($(this).attr('data-cell')+'key up');
+        // console.log($(this).attr('data-cell')+'key up');
         if($(this).attr('data-formula')){
             e.preventDefault();
             return false;
