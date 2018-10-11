@@ -9137,6 +9137,9 @@ cell.fx.setValue = function(value){
     }else{
         returnValue = this.value;
     }
+    if(returnValue == 0) {
+        returnValue = '';
+    }
 
     return returnValue;
 }/**
