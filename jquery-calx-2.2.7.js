@@ -9791,10 +9791,12 @@ sheet.fx.getActiveCell = function(){
         var newVal      = currentCell.el.val();
         var cellFormat  = currentCell.getFormat();
 
-        if(currentCell.el.attr('type') == 'number') {
-            currentCell.el.attr('type', 'text');
+        if(!PlatformConfig.isAndroid) {
+            if(currentCell.el.attr('type') == 'number') {
+                currentCell.el.attr('type', 'text');
+            }    
         }
-
+        
         if(currentCell.isCheckbox && currentCell.el.attr('type') == 'checkbox'){
             if(currentCell.el.prop('checked')){
                 currentCell.setValue(newVal);
@@ -9832,7 +9834,6 @@ sheet.fx.getActiveCell = function(){
             }else{
                 rawValue = ($.isNumeric(newVal)) ? parseFloat(newVal) : newVal;
             }
-
             currentCell.setValue(rawValue);
         }
 
@@ -9919,13 +9920,12 @@ sheet.fx.getActiveCell = function(){
 
     /** focus does not depend on configuration, always get the value on focus */
     this.el.on('focus', 'input[data-cell]:not([readonly])',function(){
-        console.log('focus');
-        if(!PlatformConfig.isAndroid) {
+        // if(!PlatformConfig.isAndroid) {
             if($(this).attr('type') == 'text') {
                 $(this).attr('type', 'number');
             }
-            $(this).trigger('calx.getValue');    
-        }
+        // }
+        $(this).trigger('calx.getValue');
     });
 
     // This works until we are scrolling over
